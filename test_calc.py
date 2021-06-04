@@ -1,6 +1,6 @@
 from unittest import TestCase, main
-import numpy as np
 from calc import MainCalc
+import matplotlib.pyplot as plt
 
 
 class TestApp(TestCase):
@@ -54,12 +54,10 @@ class TestApp(TestCase):
     def test_E0_vector(self):
         print(self.mc.E0_vector())
 
-
-
-
-
-
-
+    def test_plot(self):
+        x, y = self.mc.E0_vector()
+        plt.plot(x, y)
+        plt.show()
 
 
 if __name__ == '__main__':
