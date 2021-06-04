@@ -4,7 +4,7 @@ from calc import MainCalc
 
 
 class TestApp(TestCase):
-    mc = MainCalc(zb=0.015, rb=0.015, eps=1.725, eps_b=1e6 * 1.6e-12, q=-2e-9 * 3e9)
+    mc = MainCalc(zb=0.015, rb=0.015, eps=1.725, eps_b=1e6 * 1.6e-12, q=-2e-9 * 3e9, r=0.0001)
 
     def test_v0(self):
         self.assertAlmostEqual(self.mc.v0, 2.821e10, delta=0.01 * 2.821e10)
@@ -50,6 +50,9 @@ class TestApp(TestCase):
 
     def test_E0_ksi(self):
         self.assertAlmostEqual(self.mc.E0_ksi(0.4), 5.869e-11, delta=1e-11)
+
+    def test_E0_vector(self):
+        print(self.mc.E0_vector())
 
 
 

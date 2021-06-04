@@ -14,7 +14,7 @@ class MainCalc:
     lambda_1 = 2.4048
     b = 0.025
 
-    def __init__(self, zb=0, rb=0, eps=0, eps_b=0, q=0, ksi_min=0, ksi_max=0.556167, ksi_step=0.003):
+    def __init__(self, zb=0, rb=0, eps=0, eps_b=0, q=0, ksi_min=0, ksi_max=0.556167, ksi_step=0.003, r=0.0001):
         if zb * rb * eps * eps_b == 0:
             raise ValueError('Некоректні значення для розрахунків')
         self.zb = zb
@@ -25,6 +25,7 @@ class MainCalc:
         self.ksi_min = ksi_min
         self.ksi_max = ksi_max
         self.ksi_step = ksi_step
+        self.r = r
 
         self.v0 = self.c * np.sqrt(1 - 1 / (1 + self.eps_b / (self.m * self.c ** 2)) ** 2)
         self.beta = self.v0 / self.c
@@ -63,3 +64,12 @@ class MainCalc:
             for i in range(1, 81):
                 res += self.Z(self.L_t0 / self.v0, k * self.L_4 / self.v0, i) * np.cos(np.pi * ksi * i / self.L)
         return res
+
+    def E0_total(self, ksi):
+        return -1 * self.E_0 * self.E0_r(self.r) * self.E0_ksi(ksi)
+
+    def E0_vector(self):
+        f = np.vectorize(self.E0_total)
+        ksi_vector = np.linspace(self.ksi_min, self.ksi_max,
+                                 num=int(np.floor(np.abs(self.ksi_max - self.ksi_min) / self.ksi_step)), endpoint=False)
+        return ksi_vector, f(ksi_vector)
