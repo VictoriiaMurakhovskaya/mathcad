@@ -7,7 +7,10 @@ import dash
 from dash.dependencies import Input, Output, State
 from dashboard import control, main_plot, update_plot
 import base64
+import flask
+import os
 
+UPLOAD_DIRECTORY = "/"
 
 def navBar():
     navbar = dbc.NavbarSimple(
@@ -45,7 +48,7 @@ app.layout = html.Div([dcc.Location(id='loc', refresh=True),
                            ],
                            id="modal", size='xl'
                        ),
-                       html.Div(id='dummy')
+                       html.Div(id='dummy', hidden=True)
 
                        ])
 
@@ -98,6 +101,28 @@ def update_main_graph(n, zb, rb, eps, epsb):
             return main_plot()
     else:
         return main_plot()
+
+
+@app.callback(
+    Output('dummy', 'children'),
+    Input('save', 'n_clicks'),
+    [State('zb-slider', 'value'),
+     State('rb-slider', 'value'),
+     State('eps-slider', 'value'),
+     State('epsb-slider', 'value'),
+     ]
+)
+def save_values(n, zb, rb, eps, epsb):
+    data_dic = {'zb': zb, 'rb': rb, 'eps': eps, 'epsb': epsb}
+    with open('current.json', 'w') as fp:
+        json.dump(data_dic, fp)
+    return n
+
+
+@app.server.route("/current.json")
+def serve_static():
+    return flask.send_file(os.getcwd()+'\current.json',
+                           mimetype="application/json")
 
 
 if __name__ == '__main__':

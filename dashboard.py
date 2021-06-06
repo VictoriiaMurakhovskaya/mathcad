@@ -4,9 +4,12 @@ import dash_bootstrap_components as dbc
 import plotly.graph_objs as go
 from calc import MainCalc
 import pandas as pd
+import numpy as np
 
 
 def control():
+    special_marks = {0: 'r_b'}
+    special_marks.update({i: '{:.2f}'.format(i) for i in np.linspace(0.04, 0.4, 10)})
     main_controls = dbc.Card([
         dbc.Row(children=[
             html.Label(id='alg-choice',
@@ -27,9 +30,8 @@ def control():
                                                        min=0,
                                                        max=0.39,
                                                        step=0.01,
-                                                       marks={i/100: 'r_b ' if i == 0 else str(i / 100) for i in
-                                                              range(0, 40, 4)},
-                                                       value=1)])],
+                                                       marks=special_marks,
+                                                       value=0.02)])],
                 style={'margin-bottom': '10px', 'margin-top': '10px'}
                 ),
         dbc.Row(children=[dbc.Col(children=[dcc.Slider(id='eps-slider',
@@ -50,12 +52,19 @@ def control():
                 ),
         dbc.Row(children=[
             dbc.Button('Оновити', outline=True, id='launch', color='success', className='mr-1',
-                       style={'width': '100px', 'margin': '5px'}),
-            dcc.Upload(id='input_file', children=[dbc.Button('Отримати з файлу', outline=True, color='primary',
-                       style={'width': '100px', 'margin': '5px'})], multiple=False),
+                       style={'width': '130px', 'margin': '5px'}),
             dbc.Button('Інфо', outline=True, id='help', color='info', className='mr-1',
-                       style={'width': '100px', 'margin': '5px'})
+                       style={'width': '130px', 'margin': '5px'})
         ], justify='center'
+        ),
+        dbc.Row(children=[
+            dcc.Upload(id='input_file', children=[dbc.Button('Завантажити файл', outline=True, color='primary',
+                                                             style={'width': '130px', 'margin': '5px'})],
+                       multiple=False),
+            html.A(dbc.Button('Записати файл', id='save', outline=True, color='secondary',
+                              style={'width': '130px', 'margin': '5px'}),
+                   href='/current.json', download='/current.json')
+            ], justify='center'
         )
     ], style={"margin-top": "15px"}, body=True)
     return main_controls
