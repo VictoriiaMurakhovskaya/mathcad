@@ -4,6 +4,7 @@ from dash import dcc
 from dash import html
 import dash_bootstrap_components as dbc
 import dash
+import dash_daq as daq
 from dash.dependencies import Input, Output, State
 from dashboard import control, main_plot, update_plot
 import base64
@@ -12,10 +13,25 @@ import os
 
 UPLOAD_DIRECTORY = "/"
 
+RED_INDICATOR = daq.Indicator(id='my-indicator-1',
+                              label={"label": "Йдуть обчислення",
+                                     "style": {'font-weight': 'bold', 'color': '#FF0000'}},
+                              labelPosition="bottom",
+                              value=True,
+                              color="#FF0000")
+
+GREEN_INDICATOR = daq.Indicator(id='my-indicator-1',
+                                label={"label": "Оновлено",
+                                       "style": {'font-weight': 'bold', 'color': '#00FF00'}},
+                                labelPosition="bottom",
+                                value=True,
+                                color="#00FF00")
+
 
 def navBar():
     navbar = dbc.NavbarSimple(
-        children=[],
+        id='nav_bar',
+        children=[GREEN_INDICATOR],
         brand="Розрахунок електричного поля кільватерного сліду",
         brand_href="/",
         color='DodgerBlue',
@@ -49,7 +65,8 @@ app.layout = html.Div([dcc.Location(id='loc', refresh=True),
                            ],
                            id="modal", size='xl'
                        ),
-                       html.Div(id='dummy', hidden=True)
+                       html.Div(id='dummy', hidden=True),
+                       dcc.Store(id='data_json')
 
                        ])
 
@@ -86,7 +103,16 @@ def update_sliders(contents):
 
 
 @app.callback(
-    Output("main-plot", 'children'),
+    Output("main-plot", "children"),
+    Input("data_json", "data")
+)
+def update_main_graph(data):
+    pass
+
+
+@app.callback(
+    [Output("data_json", 'data'),
+     Output("nav_bar", "children")],
     Input('launch', 'n_clicks'),
     [State('zb-slider', 'value'),
      State('rb-slider', 'value'),
@@ -97,11 +123,11 @@ def update_sliders(contents):
 def update_main_graph(n, zb, rb, eps, epsb):
     if n:
         if n > 0:
-            return update_plot(zb=zb, rb=rb, eps=eps, epsb=epsb)
+            return None, RED_INDICATOR
         else:
-            return main_plot()
+            return None, GREEN_INDICATOR
     else:
-        return main_plot()
+        return None, GREEN_INDICATOR
 
 
 @app.callback(

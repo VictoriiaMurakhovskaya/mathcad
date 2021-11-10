@@ -59,11 +59,9 @@ def control():
         ], justify='center'
         ),
         dbc.Row(children=[
-            dcc.Upload(id='input_file', children=[dbc.Button('Завантажити файл', outline=True, color='primary',
-                                                             style={'width': '130px', 'margin': '5px'})],
+            dcc.Upload(id='input_file', children=[dbc.Button('Завантажити файл', outline=True, color='primary')],
                        multiple=False),
-            html.A(dbc.Button('Записати файл', id='save', outline=True, color='secondary',
-                              style={'width': '130px', 'margin': '5px'}),
+            html.A(dbc.Button('Записати файл', id='save', outline=True, color='secondary'),
                    href='application/data/current.json', download='application/data/current.json')
             ], justify='center'
         )
