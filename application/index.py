@@ -79,7 +79,7 @@ def update_sliders(contents):
         decoded = base64.b64decode(content_string)
         tickers = json.load(io.StringIO(decoded.decode('utf-8')))
     else:
-        with open('data/default.json', 'r') as fp:
+        with open('application/data/default.json', 'r') as fp:
             tickers = json.load(fp)
 
     return tickers['zb'], tickers['rb'], tickers['eps'], tickers['epsb']
@@ -115,14 +115,14 @@ def update_main_graph(n, zb, rb, eps, epsb):
 )
 def save_values(n, zb, rb, eps, epsb):
     data_dic = {'zb': zb, 'rb': rb, 'eps': eps, 'epsb': epsb}
-    with open('current.json', 'w') as fp:
+    with open('application/data/current.json', 'w') as fp:
         json.dump(data_dic, fp)
     return n
 
 
 @app.server.route("/current.json")
 def serve_static():
-    return flask.send_file(os.getcwd()+'\current.json',
+    return flask.send_file(os.getcwd()+'/application/data/current.json',
                            mimetype="application/json")
 
 

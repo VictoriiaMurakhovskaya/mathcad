@@ -63,7 +63,7 @@ def control():
                        multiple=False),
             html.A(dbc.Button('Записати файл', id='save', outline=True, color='secondary',
                               style={'width': '130px', 'margin': '5px'}),
-                   href='/current.json', download='/current.json')
+                   href='application/data/current.json', download='application/data/current.json')
             ], justify='center'
         )
     ], style={"margin-top": "15px"}, body=True)
@@ -74,7 +74,7 @@ def main_plot():
     """
     :return: graph layout
     """
-    df = pd.read_pickle('data/temp.pickle')
+    df = pd.read_pickle('application/data/temp.pickle')
     x, y = df.x, df.y
     fig = go.Figure(data=[go.Scatter(x=x, y=y)])
     fig.update_layout(
@@ -96,7 +96,7 @@ def update_plot(**kwargs):
                   q=-2e-9 * 3e9, r=0.0001, ksi_max=0.56)
     x, y = mc.E0_vector()
     df = pd.DataFrame({'x': x, 'y': y})
-    df.to_pickle('data/temp.pickle')
+    df.to_pickle('application/data/temp.pickle')
     fig = go.Figure(data=[go.Scatter(x=x, y=y)])
     layout = dcc.Graph(
         id='graph',
