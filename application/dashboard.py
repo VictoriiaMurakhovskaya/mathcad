@@ -14,7 +14,8 @@ def control():
         dbc.Row(children=[
             html.Label(id='alg-choice',
                        children=['Вибір параметрів задачі'],
-                       style={'margin-left': '15px', 'vertical-align': 'bottom', 'font-weight': 'bold', 'color': 'DodgerBlue'})
+                       style={'margin-left': '15px', 'vertical-align': 'bottom',
+                              'font-weight': 'bold', 'color': 'DodgerBlue'})
         ],
             style={'margin-bottom': '10px', 'margin-left': '4px'}
         ),
@@ -103,4 +104,3 @@ def update_plot(**kwargs):
         figure=fig
     )
     return layout
-
