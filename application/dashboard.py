@@ -1,10 +1,13 @@
 from dash import dcc
 from dash import html
 import dash_bootstrap_components as dbc
-import plotly.graph_objs as go
-from calc import MainCalc
+
 import pandas as pd
 import numpy as np
+import json
+
+import plotly.graph_objs as go
+from application.calc import MainCalc
 
 
 def control():
@@ -63,7 +66,7 @@ def control():
                        multiple=False),
             html.A(dbc.Button('Записати файл', id='save', outline=True, color='secondary'),
                    href='application/data/current.json', download='application/data/current.json')
-            ], justify='center'
+        ], justify='center'
         )
     ], style={"margin-top": "15px"}, body=True)
     return main_controls
@@ -87,16 +90,20 @@ def main_plot():
     return layout
 
 
-def update_plot(**kwargs):
+def update_data(json_dict):
     """
-    :return: graph layout
+    :return: calculation data for dcc.Store
     """
-    mc = MainCalc(zb=kwargs['zb'], rb=kwargs['rb'], eps=kwargs['eps'], eps_b=kwargs['epsb'],
+    mc = MainCalc(zb=json_dict['zb'], rb=json_dict['rb'], eps=json_dict['eps'], eps_b=json_dict['epsb'],
                   q=-2e-9 * 3e9, r=0.0001, ksi_max=0.56)
     x, y = mc.E0_vector()
     df = pd.DataFrame({'x': x, 'y': y})
     df.to_pickle('application/data/temp.pickle')
-    fig = go.Figure(data=[go.Scatter(x=x, y=y)])
+    return {'x': list(x), 'y': list(y)}
+
+
+def update_plot(xy_dict):
+    fig = go.Figure(data=[go.Scatter(x=xy_dict['x'], y=xy_dict['y'])])
     layout = dcc.Graph(
         id='graph',
         figure=fig

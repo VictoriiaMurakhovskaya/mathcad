@@ -6,7 +6,7 @@ import dash_bootstrap_components as dbc
 import dash
 import dash_daq as daq
 from dash.dependencies import Input, Output, State
-from dashboard import control, main_plot, update_plot
+from application.dashboard import control, main_plot, update_plot, update_data
 import base64
 import flask
 import os
@@ -66,8 +66,8 @@ app.layout = html.Div([dcc.Location(id='loc', refresh=True),
                            id="modal", size='xl'
                        ),
                        html.Div(id='dummy', hidden=True),
-                       dcc.Store(id='data_json')
-
+                       dcc.Store(id='result_json', storage_type='session'),
+                       dcc.Store(id='data_json', storage_type='session'),
                        ])
 
 
@@ -103,31 +103,48 @@ def update_sliders(contents):
 
 
 @app.callback(
-    Output("main-plot", "children"),
-    Input("data_json", "data")
-)
-def update_main_graph(data):
-    pass
-
-
-@app.callback(
     [Output("data_json", 'data'),
+     Output("result_json", "data"),
+     Output("main-plot", "children"),
      Output("nav_bar", "children")],
-    Input('launch', 'n_clicks'),
+    [Input('launch', 'n_clicks'),
+     Input('data_json', 'modified_timestamp'),
+     Input('result_json', 'modified_timestamp')],
     [State('zb-slider', 'value'),
      State('rb-slider', 'value'),
      State('eps-slider', 'value'),
      State('epsb-slider', 'value'),
+     State('data_json', 'data'),
+     State('result_json', 'data')
      ]
 )
-def update_main_graph(n, zb, rb, eps, epsb):
-    if n:
-        if n > 0:
-            return None, RED_INDICATOR
+def run_calc(n, calc_ts, result_ts,
+             zb, rb, eps, epsb, calc_data, result_data):
+    _ctx = dash.callback_context.triggered[0]['prop_id']
+    ctx, ctx_2 = _ctx.split('.')
+
+    if ctx == 'launch':
+        if n:
+            if n > 0:
+                return {"zb": zb, "rb": rb, "eps": eps, "epsb": epsb}, dash.no_update, dash.no_update, RED_INDICATOR
+            else:
+                return dash.no_update, dash.no_update, dash.no_update, dash.no_update
         else:
-            return None, GREEN_INDICATOR
+            return dash.no_update
+    elif ctx == 'data_json':
+        if calc_data:
+            calc_result = update_data(calc_data)
+            return dash.no_update, calc_result,  dash.no_update,  dash.no_update
+        else:
+            return dash.no_update, dash.no_update, dash.no_update, dash.no_update
+    elif ctx == 'result_json':
+        if result_data:
+            fig = update_plot(result_data)
+            return dash.no_update,  dash.no_update,  fig,  GREEN_INDICATOR
+        else:
+            return dash.no_update, dash.no_update, dash.no_update, dash.no_update
     else:
-        return None, GREEN_INDICATOR
+        raise ValueError
 
 
 @app.callback(
@@ -150,7 +167,3 @@ def save_values(n, zb, rb, eps, epsb):
 def serve_static():
     return flask.send_file(os.getcwd()+'/application/data/current.json',
                            mimetype="application/json")
-
-
-if __name__ == '__main__':
-    app.run_server(debug=True)
