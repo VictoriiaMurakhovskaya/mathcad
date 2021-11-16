@@ -43,8 +43,8 @@ def navBar():
 def dashboard():
     layout = dbc.Container([
         dbc.Row([
-            dbc.Col(id='params', children=[inputs()], md=3, width='auto'),
-            dbc.Col(id='main-plot', children=[main_plot()], md=9, width='auto')])
+            dbc.Col(id='params', children=[inputs()], md=4, width='auto'),
+            dbc.Col(id='main-plot', children=[main_plot()], md=8, width='auto')])
     ], fluid=True)
     return layout
 
