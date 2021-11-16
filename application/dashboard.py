@@ -1,21 +1,17 @@
-import dash_daq.NumericInput
 from dash import dcc
 from dash import html
 import dash_bootstrap_components as dbc
 
 import pandas as pd
 import numpy as np
+import json
+import pathlib
 
 import plotly.graph_objs as go
 from application.calc import MainCalc
 
-L = 0.55
-L_t0 = 0.5
-L_4 = 0.003
-
-
-def buttons():
-    pass
+with open(pathlib.Path(__file__).parent.resolve() / 'data/default.json') as f:
+    default_data = json.load(f)
 
 
 def inputs():
@@ -37,7 +33,7 @@ def inputs():
                                       min=0,
                                       max=100,
                                       step=0.005,
-                                      value=0.015,
+                                      value=default_data['z_b'],
                                       style={"size": "70%"})
 
                         ]),
@@ -49,7 +45,7 @@ def inputs():
                                       min=0,
                                       max=0.4,
                                       step=0.005,
-                                      value=0.015,
+                                      value=default_data['r_b'],
                                       style={"size": "70%"})
                         ]),
                         dbc.Row(children=[
@@ -60,7 +56,7 @@ def inputs():
                                       min=0.5,
                                       max=3,
                                       step=0.025,
-                                      value=1.725,
+                                      value=default_data['eps'],
                                       style={"size": "70%"})
 
                         ]),
@@ -70,9 +66,9 @@ def inputs():
                                       type="number",
                                       placeholder='eps_b',
                                       min=0,
-                                      max=1e-5,
-                                      step=1e-6,
-                                      value=1e-6,
+                                      max=5e-6,
+                                      step=1e-7,
+                                      value=default_data['eps_b'],
                                       style={"size": "70%"})
 
                         ])
@@ -84,10 +80,12 @@ def inputs():
                                       type="number",
                                       placeholder='L_t0',
                                       min=0,
-                                      max=L,
-                                      step=np.around(L / 100, decimals=3),
-                                      value=np.around(L_t0 / np.around(L / 100, decimals=3), decimals=0)
-                                            * np.around(L / 100, decimals=3),
+                                      max=default_data['L'],
+                                      step=np.around(default_data['L'] / 100, decimals=3),
+                                      value=np.around(default_data['L_t0'] / np.around(default_data['L'] / 100,
+                                                                                       decimals=3), decimals=0)
+                                            * np.around(default_data['L'] / 100,
+                                                        decimals=3),
                                       style={"size": "70%"})
 
                         ]),
@@ -99,7 +97,7 @@ def inputs():
                                       min=-1000,
                                       max=0,
                                       step=1,
-                                      value=-2e-9 * 3e9,
+                                      value=default_data['q'],
                                       style={"size": "70%"})
 
                         ]),
@@ -111,7 +109,7 @@ def inputs():
                                       min=0,
                                       max=1,
                                       step=0.01,
-                                      value=L,
+                                      value=default_data['L'],
                                       style={"size": "70%"})
 
                         ]),
@@ -123,7 +121,7 @@ def inputs():
                                       min=0,
                                       max=0.01,
                                       step=0.001,
-                                      value=L_4,
+                                      value=default_data['L_4'],
                                       style={"size": "70%"})
 
                         ]),
