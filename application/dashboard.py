@@ -167,8 +167,9 @@ def update_data(json_dict):
     """
     :return: calculation data for dcc.Store
     """
-    mc = MainCalc(zb=json_dict['zb'], rb=json_dict['rb'], eps=json_dict['eps'], eps_b=json_dict['epsb'],
-                  q=-2e-9 * 3e9, r=0.0001, ksi_max=0.56)
+    mc = MainCalc(zb=json_dict['z_b'], rb=json_dict['r_b'], eps=json_dict['eps'], eps_b=json_dict['eps_b'],
+                  q=json_dict['q'], L=json_dict['L'], L_4=json_dict['L_4'], L_t0=json_dict['L_t0'],
+                  r=0.0001, ksi_max=0.56)
     x, y = mc.E0_vector()
     df = pd.DataFrame({'x': x, 'y': y})
     df.to_pickle('application/data/temp.pickle')

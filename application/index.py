@@ -94,7 +94,7 @@ def toggle_modal(n1, n2, is_open):
      Output('z_b', 'value')],
     Input('input_file', 'contents')
 )
-def update_sliders(contents):
+def update_inputs(contents):
     if contents:
         content_type, content_string = contents.split(',')
         decoded = base64.b64decode(content_string)
