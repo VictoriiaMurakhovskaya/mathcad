@@ -4,23 +4,35 @@ from numpy import heaviside as PHI
 
 
 class MainCalc:
-    L = 0.556167
-    L_t0 = 0.5
-    L_4 = 0.003
+
     m = 9.1094e-28
     c = 2.9979e10
     ee = -4.8032e-10
     lambda_1 = 2.4048
     b = 0.025
 
-    def __init__(self, zb=0, rb=0, eps=0, eps_b=0, q=0, ksi_min=0, ksi_max=0.556167, r=0.0001):
+    def __init__(self,
+                 eps: float = 0,
+                 eps_b: float = 0,
+                 L: float = 0.556167,
+                 L_t0: float = 0.5,
+                 L_4: float = 0.003,
+                 q: float = -6,
+                 rb: float = 0,
+                 zb: float = 0,
+                 ksi_min=0,
+                 ksi_max=0.556167,
+                 r=0.0001):
         if zb * rb * eps * eps_b == 0:
             raise ValueError('Некоректні значення для розрахунків')
-        self.zb = zb
-        self.rb = rb
         self.eps = eps
         self.eps_b = eps_b
+        self.L = L
+        self.L_t0 = L_t0
+        self.L_4 = L_4,
         self.q = q
+        self.rb = rb
+        self.zb = zb
         self.ksi_min = ksi_min
         self.ksi_max = ksi_max
         self.r = r
@@ -43,8 +55,8 @@ class MainCalc:
         self.Z1 = lambda t, t0, i: (-PHI((t - t0) - self.L / (beta * self.c), 1)) / \
                                    ((self.c * beta * i * np.pi) ** 2 - (self.omega_1(i)) ** 2) * \
                                    (self.c * beta * i * np.pi / self.L *
-                                    np.sin(self.c * beta * i * np.pi / self.L * (t - t0)) - \
-                                    np.power(-1, i) * self.omega_1(i) * \
+                                    np.sin(self.c * beta * i * np.pi / self.L * (t - t0)) -
+                                    np.power(-1, i) * self.omega_1(i) *
                                     np.sin(self.omega_1(i) * (t - t0 - self.L / (beta * self.c))))
 
         self.Z2 = lambda t, t0, i: PHI(t - t0, 1) / ((self.c * beta * i * np.pi) ** 2 - (self.omega_1(i)) ** 2) * \

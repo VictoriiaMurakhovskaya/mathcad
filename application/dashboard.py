@@ -84,8 +84,7 @@ def inputs():
                                       step=np.around(default_data['L'] / 100, decimals=3),
                                       value=np.around(default_data['L_t0'] / np.around(default_data['L'] / 100,
                                                                                        decimals=3), decimals=0)
-                                            * np.around(default_data['L'] / 100,
-                                                        decimals=3),
+                                            * np.around(default_data['L'] / 100, decimals=3),
                                       style={"size": "70%"})
 
                         ]),
@@ -115,7 +114,7 @@ def inputs():
                         ]),
                         dbc.Row(children=[
                             html.Label('L4', style={"size": "30%"}),
-                            dcc.Input(id='L4',
+                            dcc.Input(id='L_4',
                                       type="number",
                                       placeholder='L4',
                                       min=0,
