@@ -6,7 +6,7 @@ import dash_bootstrap_components as dbc
 import dash
 import dash_daq as daq
 from dash.dependencies import Input, Output, State
-from application.dashboard import control, main_plot, update_plot, update_data
+from application.dashboard import main_plot, update_plot, update_data, inputs
 import base64
 import flask
 import os
@@ -43,8 +43,8 @@ def navBar():
 def dashboard():
     layout = dbc.Container([
         dbc.Row([
-            dbc.Col(id='params', children=[control()], md=4, width='auto'),
-            dbc.Col(id='main-plot', children=[main_plot()], md=8, width='auto')])
+            dbc.Col(id='params', children=[inputs()], md=3, width='auto'),
+            dbc.Col(id='main-plot', children=[main_plot()], md=9, width='auto')])
     ], fluid=True)
     return layout
 
