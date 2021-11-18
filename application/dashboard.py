@@ -137,7 +137,7 @@ def inputs():
                         dbc.Col([
                             dbc.Button('Інфо', outline=True, id='help', color='info'),
                             html.A(dbc.Button('Зберегти значення', id='save', outline=True, color='secondary'),
-                                   href='application/data/current.json', download='application/data/current.json',
+                                   href='/current.json', download='/current.json',
                                    style={"margin": "0px"})
                         ], className="d-grid gap-2")
                     ])], style={"margin-top": "20px", "margin-bottom": "10px"}),
