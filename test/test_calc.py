@@ -1,10 +1,14 @@
 from unittest import TestCase, main
-from calc import MainCalc
+from application.calc import MainCalc
 import matplotlib.pyplot as plt
 
 
 class TestApp(TestCase):
-    mc = MainCalc(zb=0.015, rb=0.015, eps=1.725, eps_b=1e6 * 1.6e-12, q=-2e-9 * 3e9, r=0.0001)
+
+    def setUp(self) -> None:
+        self.mc = MainCalc(zb=0.015, rb=0.015, eps=1.725,
+                           eps_b=1e6 * 1.6e-12, q=-2e-9 * 3e9, r=0.0001,
+                           )
 
     def test_v0(self):
         self.assertAlmostEqual(self.mc.v0, 2.821e10, delta=0.01 * 2.821e10)
