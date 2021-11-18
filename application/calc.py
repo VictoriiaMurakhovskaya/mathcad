@@ -29,7 +29,7 @@ class MainCalc:
         self.eps_b = eps_b
         self.L = L
         self.L_t0 = L_t0
-        self.L_4 = L_4,
+        self.L_4 = L_4
         self.q = q
         self.rb = rb
         self.zb = zb

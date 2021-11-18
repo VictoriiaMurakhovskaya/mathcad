@@ -8,7 +8,7 @@ class TestApp(TestCase):
     def setUp(self) -> None:
         self.mc = MainCalc(zb=0.015, rb=0.015, eps=1.725,
                            eps_b=1e6 * 1.6e-12, q=-2e-9 * 3e9, r=0.0001,
-                           )
+                           L=0.556167, L_4=0.003, L_t0=0.5)
 
     def test_v0(self):
         self.assertAlmostEqual(self.mc.v0, 2.821e10, delta=0.01 * 2.821e10)
@@ -47,7 +47,7 @@ class TestApp(TestCase):
     def test_Z(self):
         t = self.mc.L_t0 / self.mc.v0
         t0 = self.mc.L_4 / self.mc.v0
-        self.assertAlmostEqual(self.mc.Z(t, t0, 1), 0, delta=1e-12)
+        self.assertAlmostEqual(self.mc.Z(t, t0), 0, delta=1e-12)
 
     def test_E0_r(self):
         self.assertAlmostEqual(self.mc.E0_r(0.001), 1.307, delta=0.02)
