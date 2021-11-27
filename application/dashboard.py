@@ -27,48 +27,48 @@ def inputs():
                     dbc.Col(children=[
                         dbc.Row(children=[
                             html.Label('z_b', style={"size": "30%"}),
-                            dcc.Input(id='z_b',
+                            dbc.Input(id='z_b',
                                       type="number",
                                       placeholder='z_b',
                                       min=0,
                                       max=100,
-                                      step=0.005,
                                       value=default_data['z_b'],
+                                      debounce=True,
                                       style={"size": "70%"})
 
                         ]),
                         dbc.Row(children=[
                             html.Label('r_b', style={"size": "30%"}),
-                            dcc.Input(id='r_b',
+                            dbc.Input(id='r_b',
                                       type="number",
                                       placeholder='r_b',
                                       min=0,
                                       max=0.4,
-                                      step=0.005,
                                       value=default_data['r_b'],
+                                      debounce=True,
                                       style={"size": "70%"})
                         ]),
                         dbc.Row(children=[
                             html.Label('eps', style={"size": "30%"}),
-                            dcc.Input(id='eps',
+                            dbc.Input(id='eps',
                                       type="number",
                                       placeholder='eps',
                                       min=0.5,
                                       max=3,
-                                      step=0.025,
                                       value=default_data['eps'],
+                                      debounce=True,
                                       style={"size": "70%"})
 
                         ]),
                         dbc.Row(children=[
                             html.Label('eps_b', style={"size": "30%"}),
-                            dcc.Input(id='eps_b',
+                            dbc.Input(id='eps_b',
                                       type="number",
                                       placeholder='eps_b',
                                       min=0,
                                       max=5e-6,
-                                      step=1e-7,
                                       value=default_data['eps_b'],
+                                      debounce=True,
                                       style={"size": "70%"})
 
                         ])
@@ -76,51 +76,49 @@ def inputs():
                     dbc.Col(children=[
                         dbc.Row(children=[
                             html.Label('L_t0', style={"size": "30%"}),
-                            dcc.Input(id='L_t0',
+                            dbc.Input(id='L_t0',
                                       type="number",
                                       placeholder='L_t0',
                                       min=0,
                                       max=default_data['L'],
-                                      step=np.around(default_data['L'] / 100, decimals=3),
-                                      value=np.around(default_data['L_t0'] / np.around(default_data['L'] / 100,
-                                                                                       decimals=3), decimals=0)
-                                            * np.around(default_data['L'] / 100, decimals=3),
+                                      value=default_data['L_t0'],
+                                      debounce=True,
                                       style={"size": "70%"})
 
                         ]),
                         dbc.Row(children=[
                             html.Label('q', style={"size": "30%"}),
-                            dcc.Input(id='q',
+                            dbc.Input(id='q',
                                       type="number",
                                       placeholder='q',
                                       min=-1000,
                                       max=0,
-                                      step=1,
                                       value=default_data['q'],
+                                      debounce=True,
                                       style={"size": "70%"})
 
                         ]),
                         dbc.Row(children=[
                             html.Label('L', style={"size": "30%"}),
-                            dcc.Input(id='L',
+                            dbc.Input(id='L',
                                       type="number",
                                       placeholder='L',
                                       min=0,
                                       max=1,
-                                      step=0.01,
                                       value=default_data['L'],
+                                      debounce=True,
                                       style={"size": "70%"})
 
                         ]),
                         dbc.Row(children=[
                             html.Label('L4', style={"size": "30%"}),
-                            dcc.Input(id='L_4',
+                            dbc.Input(id='L_4',
                                       type="number",
                                       placeholder='L4',
                                       min=0,
                                       max=0.01,
-                                      step=0.001,
                                       value=default_data['L_4'],
+                                      debounce=True,
                                       style={"size": "70%"})
 
                         ]),

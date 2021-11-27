@@ -91,17 +91,25 @@ def toggle_modal(n1, n2, is_open):
      Output('L_4', 'value'),
      Output('q', 'value'),
      Output('r_b', 'value'),
-     Output('z_b', 'value')],
-    Input('input_file', 'contents')
+     Output('z_b', 'value'),
+     Output('L_t0', 'max')],
+    [Input('input_file', 'contents'),
+     Input('L', 'n_blur_timestamp')],
+    [State('L', 'value'),
+     State('L_t0', 'value')]
 )
-def update_inputs(contents):
-    if contents:
-        content_type, content_string = contents.split(',')
-        decoded = base64.b64decode(content_string)
-        tickers = json.load(io.StringIO(decoded.decode('utf-8')))
-        return tuple(tickers.values())
-    else:
-        return [dash.no_update] * 8
+def update_inputs(contents, l_ts, state_l, state_l_t0):
+    _ctx = dash.callback_context.triggered[0]['prop_id']
+    ctx, ctx_2 = _ctx.split('.')
+    if ctx == 'launch':
+        if contents:
+            content_type, content_string = contents.split(',')
+            decoded = base64.b64decode(content_string)
+            tickers = json.load(io.StringIO(decoded.decode('utf-8')))
+            return list(tickers.values()) + dash.no_update
+    elif ctx == 'L':
+        return [dash.no_update] * 8 + [state_l]
+    return [dash.no_update] * 9
 
 
 @app.callback(
@@ -133,7 +141,8 @@ def run_calc(n, calc_ts, result_ts,
     if ctx == 'launch':
         if n:
             if n > 0:
-                return {item: args[n] for n, item in enumerate(["eps", "eps_b", "L", "L_t0", "L_4", "q", "r_b", "z_b"])},\
+                return {item: args[n] for n, item in
+                        enumerate(["eps", "eps_b", "L", "L_t0", "L_4", "q", "r_b", "z_b"])}, \
                        dash.no_update, dash.no_update, RED_INDICATOR
             else:
                 return dash.no_update, dash.no_update, dash.no_update, dash.no_update
@@ -142,13 +151,13 @@ def run_calc(n, calc_ts, result_ts,
     elif ctx == 'data_json':
         if calc_data:
             calc_result = update_data(calc_data)
-            return dash.no_update, calc_result,  dash.no_update,  dash.no_update
+            return dash.no_update, calc_result, dash.no_update, dash.no_update
         else:
             return dash.no_update, dash.no_update, dash.no_update, dash.no_update
     elif ctx == 'result_json':
         if result_data:
             fig = update_plot(result_data)
-            return dash.no_update,  dash.no_update,  fig,  GREEN_INDICATOR
+            return dash.no_update, dash.no_update, fig, GREEN_INDICATOR
         else:
             return dash.no_update, dash.no_update, dash.no_update, dash.no_update
     else:
@@ -176,5 +185,5 @@ def save_values(n, *args):
 
 @app.server.route("/current.json")
 def serve_static():
-    return flask.send_file(os.getcwd()+'/application/data/current.json',
+    return flask.send_file(os.getcwd() + '/application/data/current.json',
                            mimetype="application/json")
