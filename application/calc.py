@@ -4,7 +4,6 @@ from numpy import heaviside as PHI
 
 
 class MainCalc:
-
     m = 9.1094e-28
     c = 2.9979e10
     ee = -4.8032e-10
@@ -39,35 +38,50 @@ class MainCalc:
         self.jn2 = jn(1, self.lambda_1) * jn(1, self.lambda_1)
         self.k = np.array([1, 2, 3])
         self.i = np.array([1, 2, 3, 4, 5])
+        self.v0, self.beta, self.E_0, self.omega_1, self.nb, self.gamma = 0, 0, 0, 0, 0, 0
 
+    def calculate(self):
+        Z1 = self.Z1_calc()
+        Z2 = self.Z2_calc()
+        Z = lambda k, i: Z1(self.L_t0 / self.v0, k * self.L_4 / self.v0, i) + \
+                         Z2(self.L_t0 / self.v0, k * self.L_4 / self.v0, i)
+
+        E0_R = -1 * self.E_0 * self.E0_r(self.r)
+        return E0_R
+
+    def pre_calc(self):
         self.v0 = self.c * np.sqrt(1 - 1 / (1 + self.eps_b / (self.m * self.c ** 2)) ** 2)
         self.beta = self.v0 / self.c
         self.E_0 = 8 * self.q * self.c / (self.eps ** 2 * self.b * self.beta * self.L * self.rb)
 
-        self.omega_1 = lambda i: self.c / np.sqrt(self.eps) * np.sqrt((np.pi * i / self.L) ** 2 +
-                                                                      (self.lambda_1 / self.b) ** 2)
+    def omega_1_func(self):
+        return lambda i: self.c / np.sqrt(self.eps) * np.sqrt((np.pi * i / self.L)
+                                                                           ** 2 + (self.lambda_1 / self.b) ** 2)
 
-        self.nb = self.q / (self.ee * (np.pi * self.rb ** 2 * self.zb))  # не используется
-        self.gamma = 1 / np.sqrt(1 - self.beta ** 2)  # не используется
+    def omega_1_vector_func(self):
+        return np.vectorize(self.omega_1_func())
 
-        beta = self.beta
+    def Z2_calc(self, t, t0, i):
+        omega_1 = self.omega_1_func()
+        first_factor = PHI(t - t0, 1) / ((self.c * self.beta * i * np.pi / self.L)**2 - omega_1(i)**2)
+        second_factor_1 = (self.c * self.beta * i * np.pi / self.L) * \
+                          np.sin(self.c * self.beta * i * np.pi / self.L * (t - t0))
+        second_factor_2 = omega_1(i) * np.sin(omega_1(i) * (t - t0))
+        return first_factor * (second_factor_1 - second_factor_2)
 
-        self.Z1 = lambda t, t0, i: (-PHI((t - t0) - self.L / (beta * self.c), 1)) / \
-                                   ((self.c * beta * i * np.pi) ** 2 - (self.omega_1(i)) ** 2) * \
-                                   (self.c * beta * i * np.pi / self.L *
-                                    np.sin(self.c * beta * i * np.pi / self.L * (t - t0)) -
-                                    np.power(-1, i) * self.omega_1(i) *
-                                    np.sin(self.omega_1(i) * (t - t0 - self.L / (beta * self.c))))
+    def Z2_ki_calc(self, k, i):
+        t = self.L_t0 / self.v0
+        t_0 = self.L_4 * k / self.v0
+        return self.Z2_calc(t, t_0, i)
 
-        self.Z2 = lambda t, t0, i: PHI(t - t0, 1) / ((self.c * beta * i * np.pi) ** 2 - (self.omega_1(i)) ** 2) * \
-                                   (self.c * beta * i * np.pi / self.L *
-                                    np.sin(self.c * beta * i * np.pi / self.L * (t - t0)) - self.omega_1(i) *
-                                    np.sin(self.omega_1(i) * (t - t0)))
-
-        self.Z = lambda k, i: self.Z1(self.L_t0 / self.v0, k * self.L_4 / self.v0, i) + \
-                              self.Z2(self.L_t0 / self.v0, k * self.L_4 / self.v0, i)
-
-        self.E0_R = -1 * self.E_0 * self.E0_r(self.r)
+    def Z1_calc(self, t, t0, i):
+        omega_1 = self.omega_1_func()
+        return (-PHI((t - t0) - self.L / (self.beta * self.c), 1)) / \
+               ((self.c * self.beta * i * np.pi) ** 2 - (omega_1(i)) ** 2) * \
+               (self.c * self.beta * i * np.pi / self.L *
+                np.sin(self.c * self.beta * i * np.pi / self.L * (t - t0)) -
+                np.power(-1, i) * omega_1(i) *
+                np.sin(omega_1(i) * (t - t0 - self.L / (self.beta * self.c))))
 
     def E0_r(self, r):
         return jn(0, self.lambda_1 * r / self.b) * np.exp(
@@ -75,18 +89,19 @@ class MainCalc:
 
     def E0_ksi(self, ksi):
         res = 0
-        for i in range(1, 81):
-            cos_value = np.cos(np.pi * ksi * i / self.L)
-            res_k = 0
-            for k in range(0, 9):
-                res_k += self.Z(k, i)
-            res += cos_value * res_k
+        for k in range(0, 10):
+            for i in range(1, 81):
+                res += self.Z2_ki_calc(k, i) * np.cos(np.pi * ksi * i / self.L)
         return res
 
-    def E0_total(self, ksi):
-        return self.E0_R * self.E0_ksi(ksi)
+    def E0_r_ksi(self, r, ksi):
+        return -self.E_0 * self.E0_r(r) * self.E0_ksi(ksi)
 
     def E0_vector(self):
-        f = np.vectorize(self.E0_total)
-        ksi_vector = np.linspace(self.ksi_min, self.ksi_max, num=300)
-        return ksi_vector, f(ksi_vector)
+        return np.vectorize(self.E0_r_ksi)
+
+    def get_data_for_plot(self):
+        self.pre_calc()
+        x = np.linspace(self.ksi_min, self.ksi_max, 100)
+        y = self.E0_vector()(r=self.r, ksi=x)
+        return x, y

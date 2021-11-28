@@ -165,10 +165,9 @@ def update_data(json_dict):
     """
     :return: calculation data for dcc.Store
     """
-    mc = MainCalc(zb=json_dict['z_b'], rb=json_dict['r_b'], eps=json_dict['eps'], eps_b=json_dict['eps_b'],
-                  q=json_dict['q'], L=json_dict['L'], L_4=json_dict['L_4'], L_t0=json_dict['L_t0'],
-                  r=0.0001, ksi_max=0.56)
-    x, y = mc.E0_vector()
+    x, y = MainCalc(zb=json_dict['z_b'], rb=json_dict['r_b'], eps=json_dict['eps'], eps_b=json_dict['eps_b'],
+                    q=json_dict['q'], L=json_dict['L'], L_4=json_dict['L_4'], L_t0=json_dict['L_t0'],
+                    r=0.0001, ksi_max=0.56).get_data_for_plot()
     df = pd.DataFrame({'x': x, 'y': y})
     df.to_pickle('application/data/temp.pickle')
     return {'x': list(x), 'y': list(y)}
