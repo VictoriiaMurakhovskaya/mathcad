@@ -101,12 +101,12 @@ def toggle_modal(n1, n2, is_open):
 def update_inputs(contents, l_ts, state_l, state_l_t0):
     _ctx = dash.callback_context.triggered[0]['prop_id']
     ctx, ctx_2 = _ctx.split('.')
-    if ctx == 'launch':
+    if ctx == 'input_file':
         if contents:
             content_type, content_string = contents.split(',')
             decoded = base64.b64decode(content_string)
             tickers = json.load(io.StringIO(decoded.decode('utf-8')))
-            return list(tickers.values()) + dash.no_update
+            return list(tickers.values()) + [dash.no_update]
     elif ctx == 'L':
         return [dash.no_update] * 8 + [state_l]
     return [dash.no_update] * 9
